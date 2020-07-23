@@ -6,7 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
@@ -75,5 +80,27 @@ public class ListActivity extends AppCompatActivity {
         travelDealsRecycle.setLayoutManager(rvManager);
         final DealAdapter dealAdapter = new DealAdapter(this);
         travelDealsRecycle.setAdapter(dealAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.list_activity_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.add_deal:
+                addDeal(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void addDeal(Context c) {
+        Intent intent = new Intent(c,InsertActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,6 +1,7 @@
 package com.pyropy.travelseal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,23 +92,43 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
         return deals.size();
     }
 
-    public static class DealViewHolder extends RecyclerView.ViewHolder{
+    public  class DealViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView tvTitle;
         TextView tvDescription;
         TextView tvPrice;
-        String price="Cost: ";
+        String price="Cost: N";
         public DealViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle= (TextView) itemView.findViewById(R.id.tvTitle);
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
             tvPrice = (TextView) itemView.findViewById(R.id.tvPrice);
+
+            itemView.setOnClickListener(this);
         }
 
         public void bind(TravelDeal travelDeal){
             tvTitle.setText(travelDeal.getTitle());
-            tvDescription.setText(travelDeal.getDescription());
+            String description = travelDeal.getDescription();
+            StringBuilder shortenedDescription= new StringBuilder();
+            if (description.length() > 70) {
+                shortenedDescription.append(description.substring(0, 70));
+                shortenedDescription.append("...");
+            }else{
+                shortenedDescription.append(description);
+            }
+            tvDescription.setText(shortenedDescription.toString());
             price = travelDeal.getPrice()==null? price + "In Review": price + travelDeal.getPrice();
             tvPrice.setText(price);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            Log.d("Item Clicked", String.valueOf(position));
+            TravelDeal selectedDeal = deals.get(position);
+            Intent intent = new Intent(view.getContext(),InsertActivity.class);
+            intent.putExtra("Deal",selectedDeal);
+            view.getContext().startActivity(intent);
         }
     }
 }

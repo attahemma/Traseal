@@ -4,7 +4,9 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion "30.0.1"
-
+    dataBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.pyropy.travelseal"
         minSdkVersion 21

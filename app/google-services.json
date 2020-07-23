@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "239587939997",
+    "firebase_url": "https://travelseal-7e30b.firebaseio.com",
+    "project_id": "travelseal-7e30b",
+    "storage_bucket": "travelseal-7e30b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239587939997:android:1c0a9d1dfb8a6f56856674",
+        "android_client_info": {
+          "package_name": "com.pyropy.travelseal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239587939997-23h1nh995o3j9hcjqknop3msc76hos38.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZBW_Y0AeSF5JiKBQveTOx5RPyLp5SSUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239587939997-23h1nh995o3j9hcjqknop3msc76hos38.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

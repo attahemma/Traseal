@@ -6,4 +6,8 @@
         android:id="@+id/add_deal"
         android:title="Add Travel Deal"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/firebase_logout"
+        android:title="Logout"
+        app:showAsAction="never" />
 </menu>

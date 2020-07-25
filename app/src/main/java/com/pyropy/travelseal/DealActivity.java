@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class InsertActivity extends AppCompatActivity {
+public class DealActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private EditText title;
@@ -26,7 +26,7 @@ public class InsertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
-        FirebaseUtil.openFbReference(getString(R.string.firebase_reference));
+        FirebaseUtil.openFbReference(getString(R.string.firebase_reference),this);
         mFirebaseDatabase = FirebaseUtil.mFirebaseDatabase;
         mDatabaseReference = FirebaseUtil.mDatabaseReference;
 
@@ -49,6 +49,15 @@ public class InsertActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.save_menu,menu);
+        if (FirebaseUtil.isadmin){
+            menu.findItem(R.id.save_menu).setVisible(true);
+            menu.findItem(R.id.delete).setVisible(true);
+            enableEditTexts(true);
+        }else{
+            menu.findItem(R.id.save_menu).setVisible(false);
+            menu.findItem(R.id.delete).setVisible(false);
+            enableEditTexts(false);
+        }
         return true;
     }
 
@@ -105,5 +114,10 @@ public class InsertActivity extends AppCompatActivity {
     private void returnToList(){
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
+    }
+    private void enableEditTexts(boolean isEnabled){
+        title.setEnabled(isEnabled);
+        price.setEnabled(isEnabled);
+        description.setEnabled(isEnabled);
     }
 }

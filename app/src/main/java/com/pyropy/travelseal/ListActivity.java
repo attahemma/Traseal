@@ -1,7 +1,6 @@
 package com.pyropy.travelseal;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,14 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,63 +27,25 @@ public class ListActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
-    //private TextView mTvDeals;
-    //private RecyclerView mTvDealsRecycle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        FirebaseUtil.openFbReference(getString(R.string.firebase_reference));
-
-        //mTvDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
-        //LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
-
-//        mTvDeals = (TextView) findViewById(R.id.tvDeals);
-//        mFirebaseDatabase = FirebaseUtil.mFirebaseDatabase;
-//        mDatabaseReference = FirebaseUtil.mDatabaseReference;
-//
-//        mChildEventListener = new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//                TravelDeal trDeals = snapshot.getValue(TravelDeal.class);
-//                mTvDeals.setText(mTvDeals.getText() + "\n" + trDeals.getTitle() +"  -----------  "+trDeals.getPrice());
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//                //TravelDeal trDeals = snapshot.getValue(TravelDeal.class);
-//                //mTvDeals.setText(trDeals.getTitle() +"  -----------  "+trDeals.getPrice()+"\n");
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//        mDatabaseReference.addChildEventListener(mChildEventListener);
-        RecyclerView travelDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
-        LinearLayoutManager rvManager = new LinearLayoutManager(this);
-        travelDealsRecycle.setLayoutManager(rvManager);
-        final DealAdapter dealAdapter = new DealAdapter(this);
-        travelDealsRecycle.setAdapter(dealAdapter);
+        FirebaseUtil.openFbReference(getString(R.string.firebase_reference),this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_activity_menu,menu);
+
+        MenuItem insertMenu = menu.findItem(R.id.add_deal);
+
+        if (FirebaseUtil.isadmin == true){
+            insertMenu.setVisible(true);
+        }else{
+            insertMenu.setVisible(false);
+        }
         return true;
     }
 
@@ -94,13 +55,48 @@ public class ListActivity extends AppCompatActivity {
             case R.id.add_deal:
                 addDeal(this);
                 return true;
+            case R.id.firebase_logout:
+                AuthUI.getInstance()
+                        .signOut(this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Log.d("Firebase Logout", "user logged out");
+                                FirebaseUtil.attachListener();
+                            }
+                        });
+                FirebaseUtil.detachListener();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private void addDeal(Context c) {
-        Intent intent = new Intent(c,InsertActivity.class);
+        Intent intent = new Intent(c, DealActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FirebaseUtil.detachListener();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        RecyclerView travelDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
+        LinearLayoutManager rvManager = new LinearLayoutManager(this);
+        travelDealsRecycle.setLayoutManager(rvManager);
+        final DealAdapter dealAdapter = new DealAdapter(this);
+        travelDealsRecycle.setAdapter(dealAdapter);
+        FirebaseUtil.attachListener();
+    }
+
+    public void showMenu(){
+        invalidateOptionsMenu();
     }
 }

@@ -1,18 +1,35 @@
 package com.pyropy.travelseal;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class DealActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
@@ -21,11 +38,12 @@ public class DealActivity extends AppCompatActivity {
     private EditText price;
     private EditText description;
     TravelDeal mTravelDeal;
+    private static final int PICTURE_RESULT = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insert);
+        setContentView(R.layout.activity_deal);
         FirebaseUtil.openFbReference(getString(R.string.firebase_reference),this);
         mFirebaseDatabase = FirebaseUtil.mFirebaseDatabase;
         mDatabaseReference = FirebaseUtil.mDatabaseReference;
@@ -33,6 +51,17 @@ public class DealActivity extends AppCompatActivity {
         title = (EditText) findViewById(R.id.title);
         price = (EditText) findViewById(R.id.deal_price);
         description = (EditText) findViewById(R.id.deal_description);
+        ImageButton btn = (ImageButton) findViewById(R.id.upload_btn);
+        ImageView dealImg = (ImageView) findViewById(R.id.deal_image);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/jpeg");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(intent.createChooser(intent,"Insert Deal Cover"),PICTURE_RESULT);
+            }
+        });
 
         Intent intent = getIntent();
         TravelDeal deal = intent.getParcelableExtra("Deal");
@@ -43,6 +72,13 @@ public class DealActivity extends AppCompatActivity {
         title.setText(deal.getTitle());
         price.setText(deal.getPrice());
         description.setText(deal.getDescription());
+        if (deal.getImageUrl() == null) {
+
+        }else{
+            Log.d("Deal Image",deal.getImageUrl());
+            dealImg.setImageURI(Uri.parse(deal.getImageUrl()));
+        }
+
     }
 
     @Override
@@ -119,5 +155,34 @@ public class DealActivity extends AppCompatActivity {
         title.setEnabled(isEnabled);
         price.setEnabled(isEnabled);
         description.setEnabled(isEnabled);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICTURE_RESULT && resultCode == RESULT_OK){
+            Uri imgUrl = data.getData();
+            final StorageReference ref = FirebaseUtil.mStorageReference.child(imgUrl.getLastPathSegment());
+            UploadTask uUploadTask = ref.putFile(imgUrl);
+            Task<Uri> uUriTask = uUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()){
+                        Toast.makeText(getApplicationContext(),"Upload failed", Toast.LENGTH_SHORT).show();
+                    }
+
+                    return ref.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()){
+                        Uri uUri  = task.getResult();
+                        Log.d("Upload Url", uUri.toString());
+                        mTravelDeal.setImageUrl(uUri.toString());
+                    }
+                }
+            });
+        }
     }
 }

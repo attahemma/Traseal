@@ -12,6 +12,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,10 +26,12 @@ public class FirebaseUtil {
     public static FirebaseDatabase mFirebaseDatabase;
     public static DatabaseReference mDatabaseReference;
     public static FirebaseAuth mFirebaseAuth;
+    public static FirebaseStorage mFirebaseStorage;
+    public static StorageReference mStorageReference;
     public static FirebaseAuth.AuthStateListener mAuthListener;
     public static FirebaseUtil mFirebaseUtil;
     public static ArrayList<TravelDeal> mTravelDeals;
-    private static ListActivity mCaller;
+    private static Activity mCaller;
     private static final int RC_SIGN_IN = 123;
     public static boolean isadmin;
 
@@ -51,6 +55,7 @@ public class FirebaseUtil {
                     }
                 }
             };
+            connectStorage();
         }
         mTravelDeals = new ArrayList<TravelDeal>();
         mDatabaseReference = mFirebaseDatabase.getReference().child(ref);
@@ -63,7 +68,9 @@ public class FirebaseUtil {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 FirebaseUtil.isadmin = true;
-                mCaller.showMenu();
+                if (mCaller instanceof ListActivity){
+                    ((ListActivity) mCaller).showMenu();
+                }
             }
 
             @Override
@@ -105,5 +112,9 @@ public class FirebaseUtil {
 
     public static void detachListener(){
         mFirebaseAuth.removeAuthStateListener(mAuthListener);
+    }
+    public static void connectStorage(){
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mStorageReference = mFirebaseStorage.getReference().child("Deals_imgs");
     }
 }

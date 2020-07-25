@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/standard_margins"
         android:layout_marginStart="@dimen/standard_margins"
-        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/deal_title"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/upload_btn" />
 
     <EditText
         android:id="@+id/deal_price"
@@ -46,4 +46,25 @@
         app:layout_constraintStart_toStartOf="@+id/deal_price"
         app:layout_constraintTop_toBottomOf="@+id/deal_price"
         android:importantForAutofill="no" />
+
+    <ImageView
+        android:id="@+id/deal_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/screen_background_dark_transparent" />
+
+    <ImageButton
+        android:id="@+id/upload_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deal_image"
+        app:srcCompat="@drawable/upload_photo" />
 </androidx.constraintlayout.widget.ConstraintLayout>

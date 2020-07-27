@@ -5,7 +5,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +42,7 @@ public class DealActivity extends AppCompatActivity {
     private EditText description;
     TravelDeal mTravelDeal;
     private static final int PICTURE_RESULT = 42;
+    private ImageView mDealImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +56,7 @@ public class DealActivity extends AppCompatActivity {
         price = (EditText) findViewById(R.id.deal_price);
         description = (EditText) findViewById(R.id.deal_description);
         ImageButton btn = (ImageButton) findViewById(R.id.upload_btn);
-        ImageView dealImg = (ImageView) findViewById(R.id.deal_image);
+        mDealImg = (ImageView) findViewById(R.id.deal_image);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +73,8 @@ public class DealActivity extends AppCompatActivity {
             deal = new TravelDeal();
         }
         mTravelDeal = deal;
+//        ActivityDealBinding uDealBinding = DataBindingUtil.setContentView(this,R.layout.activity_deal);
+//        uDealBinding.setDeal(mTravelDeal);
         title.setText(deal.getTitle());
         price.setText(deal.getPrice());
         description.setText(deal.getDescription());
@@ -76,7 +82,7 @@ public class DealActivity extends AppCompatActivity {
 
         }else{
             Log.d("Deal Image",deal.getImageUrl());
-            dealImg.setImageURI(Uri.parse(deal.getImageUrl()));
+            showImage(deal.getImageUrl());
         }
 
     }
@@ -164,6 +170,14 @@ public class DealActivity extends AppCompatActivity {
             Uri imgUrl = data.getData();
             final StorageReference ref = FirebaseUtil.mStorageReference.child(imgUrl.getLastPathSegment());
             UploadTask uUploadTask = ref.putFile(imgUrl);
+//            uUploadTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    String url = taskSnapshot.getMetadata().getPath();
+//                    String downloadUrl = ref.getDownloadUrl().toString();
+//                    mTravelDeal.setImageUrl(downloadUrl);
+//                }
+//            });
             Task<Uri> uUriTask = uUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -171,6 +185,8 @@ public class DealActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"Upload failed", Toast.LENGTH_SHORT).show();
                     }
 
+//                    Log.d("Upload Url", ref.getDownloadUrl().toString());
+//                    mTravelDeal.setImageUrl(ref.getDownloadUrl().toString());
                     return ref.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -178,11 +194,27 @@ public class DealActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()){
                         Uri uUri  = task.getResult();
-                        Log.d("Upload Url", uUri.toString());
                         mTravelDeal.setImageUrl(uUri.toString());
+                        Log.d("Suspected Upload Url", uUri.toString());
+                        showImage(uUri.toString());
                     }
                 }
             });
         }
+    }
+
+//    public void uploadImage(View view) {
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/jpeg");
+//        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+//        startActivityForResult(intent.createChooser(intent,"Insert Deal Cover"),PICTURE_RESULT);
+//    }
+
+    public void showImage(String url){
+        if (url != null && url.isEmpty() == false){
+            int width = Resources.getSystem().getDisplayMetrics().widthPixels - 10;
+            Picasso.get().load(url).resize(width, width*2/3).centerCrop().placeholder(android.R.drawable.gallery_thumb).into(mDealImg);
+        }
+
     }
 }

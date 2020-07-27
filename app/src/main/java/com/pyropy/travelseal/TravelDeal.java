@@ -1,7 +1,14 @@
 package com.pyropy.travelseal;
 
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.firebase.ui.auth.data.model.Resource;
+import com.squareup.picasso.Picasso;
+
 
 public class TravelDeal implements Parcelable {
     private String id;
@@ -92,5 +99,23 @@ public class TravelDeal implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(price);
         parcel.writeString(imageUrl);
+    }
+
+
+//    public static void loadImage(ImageView view, String imageUrl){
+//        if (imageUrl==null)imageUrl="";
+//        if (!imageUrl.isEmpty()) {
+//            showImage(imageUrl,view);
+//        }
+//        else{
+//
+//            view.setBackgroundResource(android.R.drawable.gallery_thumb);
+//        }
+//
+//    }
+
+    public static void showImage(String url, ImageView view){
+        int width = Resources.getSystem().getDisplayMetrics().widthPixels - 10;
+        Picasso.get().load(url).resize(width, width*2/3).centerCrop().placeholder(android.R.drawable.gallery_thumb).into(view);
     }
 }

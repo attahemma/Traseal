@@ -41,7 +41,7 @@ public class ListActivity extends AppCompatActivity {
 
         //MenuItem insertMenu = menu.findItem(R.id.add_deal);
 
-        if (FirebaseUtil.isadmin == true){
+        if (FirebaseUtil.isadmin){
             menu.findItem(R.id.add_deal).setVisible(true);
         }else{
             menu.findItem(R.id.add_deal).setVisible(false);

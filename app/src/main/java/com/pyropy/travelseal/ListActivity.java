@@ -27,12 +27,21 @@ public class ListActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
     private ChildEventListener mChildEventListener;
+    private RecyclerView mTravelDealsRecycle;
+    private LinearLayoutManager mRvManager;
+    private DealAdapter mDealAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         FirebaseUtil.openFbReference(getString(R.string.firebase_reference),this);
+        mTravelDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
+        mRvManager = new LinearLayoutManager(this);
+        mTravelDealsRecycle.setLayoutManager(mRvManager);
+        mDealAdapter = new DealAdapter(this);
+        mTravelDealsRecycle.setAdapter(mDealAdapter);
+        FirebaseUtil.attachListener();
     }
 
     @Override
@@ -86,13 +95,11 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-
-        RecyclerView travelDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
-        LinearLayoutManager rvManager = new LinearLayoutManager(this);
-        travelDealsRecycle.setLayoutManager(rvManager);
-        final DealAdapter dealAdapter = new DealAdapter(this);
-        travelDealsRecycle.setAdapter(dealAdapter);
+        mTravelDealsRecycle = (RecyclerView) findViewById(R.id.rvDeals);
+        mRvManager = new LinearLayoutManager(this);
+        mTravelDealsRecycle.setLayoutManager(mRvManager);
+        mDealAdapter = new DealAdapter(this);
+        mTravelDealsRecycle.setAdapter(mDealAdapter);
         FirebaseUtil.attachListener();
     }
 

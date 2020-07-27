@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder> {
@@ -94,18 +98,46 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
         return deals.size();
     }
 
-    public  class DealViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public  class DealViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener{
         TextView tvTitle;
         TextView tvDescription;
         TextView tvPrice;
+        ImageView overflowMenu;
         String price="Cost: N";
-        public DealViewHolder(@NonNull View itemView) {
+        public DealViewHolder(@NonNull final View itemView) {
             super(itemView);
             tvTitle= (TextView) itemView.findViewById(R.id.tvTitle);
             tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
             tvPrice = (TextView) itemView.findViewById(R.id.tvPrice);
             mImageDeal = (ImageView) itemView.findViewById(R.id.deal_img);
             itemView.setOnClickListener(this);
+            overflowMenu = (ImageView) itemView.findViewById(R.id.overflow_menu);
+            overflowMenu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //creating a popup menu
+                    PopupMenu popup = new PopupMenu(mContext, overflowMenu);
+                    //inflating menu from xml resource
+                    popup.inflate(R.menu.deal_item_menu);
+                    //adding click listener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.deal_share:
+                                    Intent intent = new Intent(Intent.ACTION_SEND).setType("text/plain")
+                                            .putExtra(Intent.EXTRA_TITLE,tvTitle.getText().toString())
+                                            .putExtra(Intent.EXTRA_TEXT,tvDescription.getText().toString());
+                                    itemView.getContext().startActivity(intent);
+                                    return true;
+                            }
+                            return false;
+                        }
+                    });
+                    //displaying the popup
+                    popup.show();
+                }
+            });
         }
 
         public void bind(TravelDeal travelDeal){
@@ -139,6 +171,12 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
                 //int width = Resources.getSystem().getDisplayMetrics().widthPixels - 10;
                 Picasso.get().load(url).resize(140, 140).centerCrop().placeholder(android.R.drawable.gallery_thumb).into(mImageDeal);
             }
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.setHeaderTitle("Book Actions");
+            contextMenu.add(this.getAdapterPosition(),121,0,"Share with Friends");
         }
     }
 }

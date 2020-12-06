@@ -1,4 +1,4 @@
-# schooleducation
+# Traseal
 A travel deal app. view updated travel deals globally. 
 
 

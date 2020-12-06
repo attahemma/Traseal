@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -149,8 +150,22 @@ public class DealActivity extends AppCompatActivity {
             Toast.makeText(this,"Can't delete new Deal", Toast.LENGTH_SHORT).show();
             return;
         }
-        else{
-            mDatabaseReference.child(mTravelDeal.getId()).removeValue();
+        mDatabaseReference.child(mTravelDeal.getId()).removeValue();
+        if (mTravelDeal.getImageName() != null && mTravelDeal.getImageName().isEmpty() == false){
+//            Uri uUri = Uri.parse(mTravelDeal.getImageName());
+//            System.out.println(uUri.getLastPathSegment());
+            StorageReference uStorageReference = FirebaseUtil.mFirebaseStorage.getReference().child(mTravelDeal.getImageName());
+            uStorageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d("Delete Image:", "image delete successful");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d("Delete Image:", "image delete failed");
+                }
+            });
         }
     }
     private void returnToList(){
@@ -197,6 +212,9 @@ public class DealActivity extends AppCompatActivity {
                         mTravelDeal.setImageUrl(uUri.toString());
                         Log.d("Suspected Upload Url", uUri.toString());
                         showImage(uUri.toString());
+                        String pictureName = task.getResult().getPath();
+                        mTravelDeal.setImageName(pictureName);
+                        Log.d("Picture Name:", pictureName);
                     }
                 }
             });

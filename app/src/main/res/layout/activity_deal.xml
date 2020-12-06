@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DealActivity">
+    tools:context=".DealActivity"
+    android:background="@drawable/app_bg"
+    >
 
     <EditText
         android:id="@+id/title"
@@ -20,7 +22,10 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/upload_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/upload_btn"
+        android:background="@drawable/white_bg"
+        android:textSize="16sp"
+        />
 
     <EditText
         android:id="@+id/deal_price"
@@ -33,20 +38,25 @@
         app:layout_constraintEnd_toEndOf="@+id/title"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        android:importantForAutofill="no" />
+        android:importantForAutofill="no"
+        android:background="@drawable/white_bg"/>
 
     <EditText
         android:id="@+id/deal_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
+        android:background="@drawable/white_bg"
         android:ems="10"
         android:hint="@string/deal_description"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
+        android:textIsSelectable="true"
+
+        android:minLines="5"
         app:layout_constraintEnd_toEndOf="@+id/deal_price"
         app:layout_constraintStart_toStartOf="@+id/deal_price"
-        app:layout_constraintTop_toBottomOf="@+id/deal_price"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/deal_price" />
 
     <ImageView
         android:id="@+id/deal_image"
@@ -68,5 +78,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/deal_image"
         app:srcCompat="@drawable/upload_photo"
+        android:background="@drawable/transparent_bg"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

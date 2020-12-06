@@ -16,15 +16,17 @@ public class TravelDeal implements Parcelable {
     private String description;
     private String price;
     private String imageUrl;
+    private String mImageName;
 
     public TravelDeal(){}
 
-    public TravelDeal(String title, String description, String price, String imageUrl) {
+    public TravelDeal(String title, String description, String price, String imageUrl, String imageName) {
         this.setId(id);
         this.setTitle(title);
         this.setDescription(description);
         this.setPrice(price);
         this.setImageUrl(imageUrl);
+        this.setImageName(imageName);
     }
 
     protected TravelDeal(Parcel in) {
@@ -33,6 +35,7 @@ public class TravelDeal implements Parcelable {
         description = in.readString();
         price = in.readString();
         imageUrl = in.readString();
+        mImageName = in.readString();
     }
 
     public static final Creator<TravelDeal> CREATOR = new Creator<TravelDeal>() {
@@ -99,6 +102,7 @@ public class TravelDeal implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(price);
         parcel.writeString(imageUrl);
+        parcel.writeString(mImageName);
     }
 
 
@@ -117,5 +121,13 @@ public class TravelDeal implements Parcelable {
     public static void showImage(String url, ImageView view){
         int width = Resources.getSystem().getDisplayMetrics().widthPixels - 10;
         Picasso.get().load(url).resize(width, width*2/3).centerCrop().placeholder(android.R.drawable.gallery_thumb).into(view);
+    }
+
+    public String getImageName() {
+        return mImageName;
+    }
+
+    public void setImageName(String imageName) {
+        mImageName = imageName;
     }
 }
